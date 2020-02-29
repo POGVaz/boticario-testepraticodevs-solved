@@ -2,3 +2,4 @@ django
 djangorestframework
 colorlog
 pylint
+psycopg2
