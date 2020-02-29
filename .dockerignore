@@ -1,0 +1,13 @@
+# Common
+README.md
+docker-compose.yml
+Dockerfile
+.vscode
+
+# Git
+.git
+.gitignore
+
+# Python
+*.pyc
+.pytest_cache
