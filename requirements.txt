@@ -1,5 +1,7 @@
 django
 djangorestframework
+djangorestframework-jwt
+django-money
 colorlog
 pylint
 psycopg2
