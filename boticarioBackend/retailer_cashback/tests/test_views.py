@@ -134,6 +134,7 @@ class TestRetailerViews(TestCase):
 
         #Return 200
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, "Registered user@test.com")
 
     def test_register_retailer_no_token(self):
         '''
@@ -151,8 +152,7 @@ class TestRetailerViews(TestCase):
             {'username': 'admin', 'password': 'admin'},
             format='json', HTTP_AUTHORIZATION='JWT '+self.valid_token)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        #self.assertEqual(response.status_code, status.HTTP_200_OK)
-        logger.debug(response.body)
+        self.assertEqual(response.data, "User admin is Valid")
 
     def test_validate_invalid_retailer(self):
         '''
@@ -164,6 +164,7 @@ class TestRetailerViews(TestCase):
             format='json', HTTP_AUTHORIZATION='JWT '+self.valid_token)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, "User invalid is Invalid")
 
     def test_validate_retailer_no_token(self):
         '''
@@ -181,7 +182,8 @@ class TestRetailerViews(TestCase):
                                    HTTP_AUTHORIZATION='JWT '+self.valid_token)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIs(response['body']['credit'], 4893)
+        self.assertEqual(type(response.data), int)
+        logger.debug("Got accumulated cashback: {}".format(str(response.data)))
 
     def test_accumulated_cashback_no_token(self):
         '''
@@ -214,12 +216,13 @@ class TestPurchaseViews(TestCase):
         response = self.client.post(
             reverse('register_purchase'), {'code': '123', 'value': 900, 'date': timezone.now(), 'cpf': '12345678910'}, format='json', HTTP_AUTHORIZATION='JWT '+self.valid_token)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, "Purchase registered: 123")
 
         test_purchase = Purchase.objects.get(code='123')
         self.assertEqual(test_purchase.status, Purchase.PurchaseStatus.EM_VALIDACAO)
         self.assertEqual(test_purchase.retailer, test_retailer)
         self.assertEqual(test_purchase.value, Money(900, 'BRL'))
-        self.assertEqual(test_purchase.cashback_applied, 0.1)
+        self.assertEqual(float(test_purchase.cashback_applied), 0.1)
         self.assertEqual(test_purchase.cashback_value, Money(90, 'BRL'))
 
     def test_register_purchase_approved_cpf(self):
@@ -233,12 +236,13 @@ class TestPurchaseViews(TestCase):
         response = self.client.post(
             reverse('register_purchase'), {'code': '123', 'value': 1200, 'date': timezone.now(), 'cpf': '15350946056'}, format='json', HTTP_AUTHORIZATION='JWT '+self.valid_token)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, "Purchase registered: 123")
 
         test_purchase = Purchase.objects.get(code='123')
         self.assertEqual(test_purchase.status, Purchase.PurchaseStatus.APROVADA)
         self.assertEqual(test_purchase.retailer, test_retailer)
         self.assertEqual(test_purchase.value, Money(1200, 'BRL'))
-        self.assertEqual(test_purchase.cashback_applied, 0.15)
+        self.assertEqual(float(test_purchase.cashback_applied), 0.15)
         self.assertEqual(test_purchase.cashback_value, Money(180, 'BRL'))
 
     def test_register_purchase_no_token(self):
@@ -264,9 +268,27 @@ class TestPurchaseViews(TestCase):
             reverse('list_purchases'), HTTP_AUTHORIZATION='JWT '+self.valid_token)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        logger.debug("Got response:" + response.data)
+        purchase_0 = dict(response.data[2])
+        del purchase_0['purchase_date']
+        self.assertEqual(purchase_0, {'code': '123',
+                         'status': Purchase.PurchaseStatus.APROVADA,
+                         'retailer': test_retailer.id, 'value': '900.00',
+                         'cashback_applied': '0.100000', 'cashback_value': '90.00'})
 
-        self.assertEqual(response.data, [])
+        purchase_1 = dict(response.data[1])
+        del purchase_1['purchase_date']
+        self.assertEqual(purchase_1, {'code': '456',
+                         'status': Purchase.PurchaseStatus.EM_VALIDACAO,
+                         'retailer': test_retailer.id, 'value': '1200.00',
+                         'cashback_applied': '0.150000', 'cashback_value': '180.00'})
+
+        purchase_2 = dict(response.data[0])
+        del purchase_2['purchase_date']
+        self.assertEqual(purchase_2, {'code': '789',
+                         'status': Purchase.PurchaseStatus.EM_VALIDACAO,
+                         'retailer': test_retailer.id, 'value': '2000.00',
+                                      'cashback_applied': '0.200000', 'cashback_value': '400.00'})
+
 
     def test_get_purchase_list_no_token(self):
         '''

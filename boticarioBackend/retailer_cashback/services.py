@@ -37,8 +37,11 @@ def create_purchase(code, purchase_date, cpf, value):
 
     purchase = Purchase.objects.create(code=code, purchase_date=purchase_date,
                                        retailer=retailer, value=value)
+
     apply_cashback(purchase)
     set_initial_purchase_status(purchase)
+    purchase.save()
+    logger.info("New purchase created: {}".format(str(purchase)))
     return purchase
 
 def apply_cashback(purchase:Purchase):
