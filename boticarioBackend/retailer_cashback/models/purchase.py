@@ -28,7 +28,7 @@ class Purchase(models.Model):
     #   one may consider using max_digits=19 and decimal_places=4
     value = MoneyField(max_digits=14, decimal_places=2, default_currency='BRL')
     # Add cashback data to the purchase in case it is needed to query for the value
-    cashback_applied = models.DecimalField(max_digits=10, decimal_places=6, null=True)
+    cashback_applied = models.DecimalField(max_digits=10, decimal_places=6, default=0)
     cashback_value = MoneyField(max_digits=14, decimal_places=2, default_currency='BRL', null=True)
 
     def __str__(self):
