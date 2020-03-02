@@ -2,6 +2,7 @@ django
 djangorestframework
 djangorestframework-jwt
 django-money
+requests
 colorlog
 pylint
 psycopg2
