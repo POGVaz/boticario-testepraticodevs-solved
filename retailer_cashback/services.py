@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 APPROVED_CPF_LIST = ['15350946056']
 
+# Connection with external accumulated cashback API
 ACCUMULATED_CASHBACK_URL = 'https://mdaqk8ek5j.execute-api.us-east-1.amazonaws.com/v1/cashback'
 ACCUMULATED_CASHBACK_TOKEN = 'ZXPURQOARHiMc6Y0flhRC1LVlZQVFRnm'
 
@@ -21,7 +22,7 @@ def create_retailer(cpf, email, password, first_name, last_name):
     user = User.objects.create_user(
         username=email, email=email, password=password, first_name=first_name, last_name=last_name)
     user.save()
-    # Create the retailer object with the user
+    # Create the retailer object (profile) with the user
     retailer = Retailer.objects.create(user=user, cpf=cpf)
     retailer.save()
 
@@ -38,16 +39,19 @@ def create_purchase(code, purchase_date, cpf, value):
     purchase = Purchase.objects.create(code=code, purchase_date=purchase_date,
                                        retailer=retailer, value=value)
 
+    # Purchase default initialization
     apply_cashback(purchase)
     set_initial_purchase_status(purchase)
     purchase.save()
     logger.info("New purchase created: {}".format(str(purchase)))
+
     return purchase
 
 def apply_cashback(purchase:Purchase):
     PERCENT_10 = 0.1
     PERCENT_15 = 0.15
     PERCENT_20 = 0.2
+
     # Check for cashback range
     if (purchase.value.amount < 1000):
         purchase.cashback_applied += PERCENT_10
@@ -62,6 +66,7 @@ def apply_cashback(purchase:Purchase):
     return purchase
 
 def set_initial_purchase_status(purchase:Purchase):
+    # Check if it is an automatically approved CPF
     if (purchase.retailer.cpf in APPROVED_CPF_LIST):
         purchase.status = Purchase.PurchaseStatus.APROVADA
     else:
@@ -71,6 +76,7 @@ def set_initial_purchase_status(purchase:Purchase):
 
 
 def get_accumulated_cashback(retailer_cpf):
+    # Request external API for the accumulated cashback
     headers = {'token': ACCUMULATED_CASHBACK_TOKEN}
     parameters = {'cpf': retailer_cpf}
     cashback_request = requests.get(ACCUMULATED_CASHBACK_URL, params=parameters, headers=headers)

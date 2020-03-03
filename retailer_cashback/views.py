@@ -21,6 +21,7 @@ def register_retailer(request):
         'cpf': request.POST.get('cpf'),
     }
 
+    # Create a retailer user and profile
     created_retailer = services.create_retailer(**request_data)
     logger.info("Created new retailer {}".format(created_retailer.user.username))
     return Response("Registered {}".format(created_retailer.user.username))
@@ -28,6 +29,7 @@ def register_retailer(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def validate_retailer(request):
+    # Authenticate with Django default authentication
     user = authenticate(username=request.GET.get('username'),
                         password=request.GET.get('password'))
 

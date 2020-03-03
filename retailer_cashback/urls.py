@@ -10,6 +10,7 @@ urlpatterns = [
     path('list-purchases', views.list_purchases, name='list_purchases'),
     path('accumulated-cashback', views.accumulated_cashback, name='accumulated_cashback'),
 
+    #Authentication views
     path('get-token-auth/', obtain_jwt_token , name='get_token'),
     path('refresh-token-auth/', refresh_jwt_token, name='refresh_token'),
     path('verify-token-auth/', verify_jwt_token, name='verify_token'),
