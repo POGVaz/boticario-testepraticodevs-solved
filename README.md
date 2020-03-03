@@ -34,8 +34,8 @@ http://localhost:8000/retailer_cashback/get-token-auth/
 e utilizar a interface para obter um token com usuário e senha
 
 Para facilitar a depuração e uso da autenticação JWT o seguinte usuário para testes é criado:
-- Username: 'myUser'
-- Password: 'myPassword'
+- __Username__: 'myUser'
+- __Password__: 'myPassword'
 
 ## Alternativamente é possível usar Docker-compose (se docker estiver disponível)
 Para construir os containers e instalar os requerimentos:
@@ -51,7 +51,7 @@ Com isso, Docker vai criar dois containers:
 - Wev-server: Onde o back-end vai receber e processar as requisições;
 - Database: Onde o postgres vai hospedar e gerenciar o banco de dados.
 
-Para interagir com a aplicação, basta seguir o mesmo procedimento anterior, mas se conectar ao endereço da máquina virtual ao invés de localhost (endereço default é: 192.168.99.100)
+Para interagir com a aplicação, basta seguir o mesmo procedimento anterior, mas se conectar ao endereço da máquina virtual ao invés de localhost (Endereço default é: _192.168.99.100_)
 
 ## Endpoints
 - /retailer_cashback/register-retailer -> Para criar novo revendedor(a) com email, senha, nome e cpf
