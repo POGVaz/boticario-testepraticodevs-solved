@@ -25,7 +25,7 @@ SECRET_KEY = 'a@(m&_8sk8ex80@0)18b9f!lw)%6*1_9mb7%&z7e+e@8#bg0fz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['testserver', 'localhost']
+ALLOWED_HOSTS = ['testserver', 'localhost', '192.168.99.100']
 
 
 # Application definition
@@ -94,6 +94,9 @@ DATABASES = {
     },
 }
 
+# Get external database, or reverts to default
+default_database = os.environ.get('DJANGO_DATABASE', 'default')
+DATABASES['default'] = DATABASES[default_database]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

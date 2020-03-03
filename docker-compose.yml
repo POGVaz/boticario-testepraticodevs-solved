@@ -2,7 +2,7 @@ version: '3'
 
 services:
     database:
-        container_name: Postgres
+        container_name: Postgres_db
         image: postgres
         env_file:
             - environment.env
@@ -10,9 +10,9 @@ services:
             - 5432:5432
 
     web_service:
-        container_name: Django_app
+        container_name: Django_web_app
         build: .
-        command: bash -c "while !</dev/tcp/database/5432; do sleep 1; done;DJANGO_DATABASE='external' python manage.py runserver 0.0.0.0:8000"
+        command: bash -c "while !</dev/tcp/database/5432; do sleep 1; done;python manage.py runserver 0.0.0.0:8000"
         volumes:
             - .:/src
         env_file:
