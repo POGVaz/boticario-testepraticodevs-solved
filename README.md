@@ -21,9 +21,17 @@ __Importante__: Os endpoints requerem autenticação JWT, então para acessá-lo
 Tokens JWT são concedidos para um par usuário e senha válido e cadastrado no banco de dados como usuário.
 
 Para obter um token (por exemplo, com cURL):
+```
+curl -X POST -d "username=<seu_username>&password=<sua_senha>" http://localhost:8000/retailer_cashback/get-token-auth/
+```
 
-
-Para enviar o token obtido (por exemplo, para obter a lista de 
+Para enviar o token obtido (por exemplo, para obter a lista de compras):
+```
+curl -H "Authorization: JWT <seu_token>" http://localhost:8000/retailer_cashback/list-purchases
+```
+Também é possível acessar
+http://localhost:8000/retailer_cashback/get-token-auth/
+e utilizar a interface provida para mandar usuário e senha
 
 ## Alternativamente é possível usar Docker-compose
 Para iniciar os containers
